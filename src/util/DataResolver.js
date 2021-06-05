@@ -3,10 +3,10 @@
 const fs = require('fs');
 const path = require('path');
 const stream = require('stream');
-const fetch = require('node-fetch');
+const req = require('petitio');
 const { Error: DiscordError, TypeError } = require('../errors');
-const { browser } = require('../util/Constants');
-const Util = require('../util/Util');
+const GuildTemplate = require('../structures/GuildTemplate');
+const Invite = require('../structures/Invite');
 
 /**
  * The DataResolver identifies different objects and tries to resolve a specific piece of information from them.
@@ -38,8 +38,7 @@ class DataResolver {
    * @returns {string}
    */
   static resolveCode(data, regex) {
-    const match = regex.exec(data);
-    return match ? match[1] || data : data;
+    return data.matchAll(regex).next().value?.[1] ?? data;
   }
 
   /**
@@ -48,7 +47,7 @@ class DataResolver {
    * @returns {string}
    */
   static resolveInviteCode(data) {
-    return this.resolveCode(data, /discord(?:(?:app)?\.com\/invite|\.gg(?:\/invite)?)\/([\w-]{2,255})/i);
+    return this.resolveCode(data, Invite.INVITES_PATTERN);
   }
 
   /**
@@ -57,7 +56,7 @@ class DataResolver {
    * @returns {string}
    */
   static resolveGuildTemplateCode(data) {
-    return this.resolveCode(data, /discord(?:app)?\.(?:com\/template|new)\/([\w-]{2,255})/i);
+    return this.resolveCode(data, GuildTemplate.GUILD_TEMPLATES_PATTERN);
   }
 
   /**
@@ -110,26 +109,21 @@ class DataResolver {
    * @returns {Promise<Buffer|Stream>}
    */
   static async resolveFile(resource) {
-    if (!browser && Buffer.isBuffer(resource)) return resource;
-    if (browser && resource instanceof ArrayBuffer) return Util.convertToBuffer(resource);
-    // eslint-disable-next-line no-undef
-    if (browser && resource instanceof Blob) return resource;
-    if (resource instanceof stream.Readable) return resource;
-
+    if (Buffer.isBuffer(resource) || resource instanceof stream.Readable) return resource;
     if (typeof resource === 'string') {
       if (/^https?:\/\//.test(resource)) {
-        const res = await fetch(resource);
-        return browser ? res.blob() : res.body;
-      } else if (!browser) {
-        return new Promise((resolve, reject) => {
-          const file = path.resolve(resource);
-          fs.stat(file, (err, stats) => {
-            if (err) return reject(err);
-            if (!stats.isFile()) return reject(new DiscordError('FILE_NOT_FOUND', file));
-            return resolve(fs.createReadStream(file));
-          });
-        });
+        const res = await req(resource).send();
+        return res.body;
       }
+
+      return new Promise((resolve, reject) => {
+        const file = path.resolve(resource);
+        fs.stat(file, (err, stats) => {
+          if (err) return reject(err);
+          if (!stats.isFile()) return reject(new DiscordError('FILE_NOT_FOUND', file));
+          return resolve(fs.createReadStream(file));
+        });
+      });
     }
 
     throw new TypeError('REQ_RESOURCE_TYPE');

@@ -1,12 +1,12 @@
 'use strict';
 
-const https = require('https');
 const FormData = require('@discordjs/form-data');
 const AbortController = require('abort-controller');
-const fetch = require('node-fetch');
-const { browser, UserAgent } = require('../util/Constants');
+const fetch = require('petitio');
+const Client = require('undici/lib/core/client.js');
+const { UserAgent } = require('../util/Constants');
 
-if (https.Agent) var agent = new https.Agent({ keepAlive: true });
+const client = new Client('https://discord.com', { pipelining: 10, keepAliveTimeout: 300000 });
 
 class APIRequest {
   constructor(rest, method, path, options) {
@@ -20,7 +20,7 @@ class APIRequest {
     let queryString = '';
     if (options.query) {
       const query = Object.entries(options.query)
-        .filter(([, value]) => ![null, 'null', 'undefined'].includes(value) && typeof value !== 'undefined')
+        .filter(([, value]) => value !== null && typeof value !== 'undefined')
         .flatMap(([key, value]) => (Array.isArray(value) ? value.map(v => [key, v]) : [[key, value]]));
       queryString = new URLSearchParams(query).toString();
     }
@@ -28,39 +28,42 @@ class APIRequest {
   }
 
   make() {
-    const API =
-      this.options.versioned === false
-        ? this.client.options.http.api
-        : `${this.client.options.http.api}/v${this.client.options.http.version}`;
+    const baseURL = this.retries ? 'https://discord.com/api' : this.client.options.http.api;
+    const API = this.options.versioned === false ? baseURL : `${baseURL}/v${this.client.options.http.version}`;
     const url = API + this.path;
     let headers = {};
 
     if (this.options.auth !== false) headers.Authorization = this.rest.getAuth();
     if (this.options.reason) headers['X-Audit-Log-Reason'] = encodeURIComponent(this.options.reason);
-    if (!browser) headers['User-Agent'] = UserAgent;
+    headers['User-Agent'] = UserAgent;
     if (this.options.headers) headers = Object.assign(headers, this.options.headers);
 
     let body;
-    if (this.options.files && this.options.files.length) {
+    if (this.options.files?.length) {
       body = new FormData();
-      for (const file of this.options.files) if (file && file.file) body.append(file.name, file.file, file.name);
-      if (typeof this.options.data !== 'undefined') body.append('payload_json', JSON.stringify(this.options.data));
-      if (!browser) headers = Object.assign(headers, body.getHeaders());
-      // eslint-disable-next-line eqeqeq
-    } else if (this.options.data != null) {
+      for (var i = 0; i !== this.options.files.length; ++i) {
+        const file = this.options.files[i];
+        if (file && file.file) body.append(file.name, file.file, file.name);
+      }
+      if (this.options.data) {
+        body.append('payload_json', JSON.stringify(this.options.data));
+      }
+      Object.assign(headers, body.getHeaders());
+    } else if (this.options.data) {
       body = JSON.stringify(this.options.data);
       headers['Content-Type'] = 'application/json';
     }
-
     const controller = new AbortController();
     const timeout = this.client.setTimeout(() => controller.abort(), this.client.options.restRequestTimeout);
-    return fetch(url, {
-      method: this.method,
-      headers,
-      agent,
-      body,
-      signal: controller.signal,
-    }).finally(() => this.client.clearTimeout(timeout));
+
+    const req = fetch(url, this.method.toUpperCase()).client(client, true);
+
+    if (body) req.body(body instanceof FormData ? body.getBuffer() : body);
+
+    return req
+      .header(headers)
+      .send()
+      .finally(() => this.client.clearTimeout(timeout));
   }
 }
 

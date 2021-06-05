@@ -1,6 +1,6 @@
 'use strict';
 
-const EventEmitter = require('events');
+const EventEmitter = require('eventemitter2');
 const fs = require('fs');
 const path = require('path');
 const Shard = require('./Shard');

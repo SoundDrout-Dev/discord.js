@@ -18,7 +18,7 @@ function buildRoute(manager) {
       if (reflectors.includes(name)) return () => route.join('/');
       if (methods.includes(name)) {
         const routeBucket = [];
-        for (let i = 0; i < route.length; i++) {
+        for (let i = 0; i !== route.length; ++i) {
           // Reactions routes and sub-routes all share the same bucket
           if (route[i - 1] === 'reactions') break;
           // Literal IDs should only be taken account if they are the Major ID (the Channel/Guild ID)

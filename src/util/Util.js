@@ -1,7 +1,7 @@
 'use strict';
 
 const { parse } = require('path');
-const fetch = require('node-fetch');
+const req = require('petitio');
 const { Colors, DefaultOptions, Endpoints } = require('./Constants');
 const { Error: DiscordError, RangeError, TypeError } = require('../errors');
 const has = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
@@ -238,13 +238,12 @@ class Util {
    */
   static fetchRecommendedShards(token, guildsPerShard = 1000) {
     if (!token) throw new DiscordError('TOKEN_MISSING');
-    return fetch(`${DefaultOptions.http.api}/v${DefaultOptions.http.version}${Endpoints.botGateway}`, {
-      method: 'GET',
-      headers: { Authorization: `Bot ${token.replace(/^Bot\s*/i, '')}` },
-    })
+    return req(`${DefaultOptions.http.api}/v${DefaultOptions.http.version}${Endpoints.botGateway}`, 'GET')
+      .header('Authorization', `Bot ${token.replace(/^Bot\s*/i, '')}`)
+      .send()
       .then(res => {
-        if (res.ok) return res.json();
-        if (res.status === 401) throw new DiscordError('TOKEN_INVALID');
+        if (res.statusCode >= 200 && res.statusCode <= 300) return res.json();
+        if (res.statusCode === 401) throw new DiscordError('TOKEN_INVALID');
         throw res;
       })
       .then(data => data.shards * (1000 / guildsPerShard));

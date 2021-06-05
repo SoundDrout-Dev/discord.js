@@ -221,21 +221,15 @@ class APIMessage {
 
     const embedLikes = [];
     if (this.isWebhook) {
-      if (this.options.embeds) {
-        embedLikes.push(...this.options.embeds);
-      }
-    } else if (this.options.embed) {
-      embedLikes.push(this.options.embed);
-    }
+      if (this.options.embeds) embedLikes.push(...this.options.embeds);
+      // eslint-disable-next-line curly
+    } else if (this.options.embed) embedLikes.push(this.options.embed);
 
     const fileLikes = [];
-    if (this.options.files) {
-      fileLikes.push(...this.options.files);
-    }
-    for (const embed of embedLikes) {
-      if (embed.files) {
-        fileLikes.push(...embed.files);
-      }
+    if (this.options.files) fileLikes.push(...this.options.files);
+    for (var i = 0; i !== embedLikes.length; ++i) {
+      const embed = embedLikes[i];
+      if (embed.files) fileLikes.push(...embed.files);
     }
 
     this.files = await Promise.all(fileLikes.map(f => this.constructor.resolveFile(f)));
@@ -253,7 +247,7 @@ class APIMessage {
 
     const apiMessages = [];
 
-    for (let i = 0; i < this.data.content.length; i++) {
+    for (var i = 0; i !== this.data.content.length; ++i) {
       let data;
       let opt;
 

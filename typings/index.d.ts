@@ -12,7 +12,7 @@ declare enum ChannelType {
 declare module 'discord.js' {
   import BaseCollection from '@discordjs/collection';
   import { ChildProcess } from 'child_process';
-  import { EventEmitter } from 'events';
+  import { EventEmitter2 as EventEmitter } from 'eventemitter2';
   import { PathLike } from 'fs';
   import { Readable, Stream, Writable } from 'stream';
   import * as WebSocket from 'ws';
@@ -905,6 +905,7 @@ declare module 'discord.js' {
     public id: Snowflake;
     public name: string;
     public role: Role;
+    public readonly roles: Collection<Snowflake, Role>;
     public syncedAt: number;
     public syncing: boolean;
     public type: string;
@@ -1287,6 +1288,7 @@ declare module 'discord.js' {
     public permissions: Readonly<Permissions>;
     public readonly position: number;
     public rawPosition: number;
+    public tags: RoleTagData | null;
     public comparePositionTo(role: Role): number;
     public delete(reason?: string): Promise<Role>;
     public edit(data: RoleData, reason?: string): Promise<Role>;
@@ -1950,6 +1952,8 @@ declare module 'discord.js' {
     public readonly hoist: Role | null;
     public readonly color: Role | null;
     public readonly highest: Role;
+    public readonly premiumSubscriberRole: Role | null;
+    public readonly botRole: Role | null;
     public member: GuildMember;
     public guild: Guild;
 
@@ -2011,6 +2015,8 @@ declare module 'discord.js' {
     public readonly highest: Role;
     public guild: Guild;
 
+    public readonly premiumSubscriberRole: Role | null;
+    public botRoleFor(user: UserResolvable): Role | null;
     public create(options?: { data?: RoleData; reason?: string }): Promise<Role>;
     public fetch(id: Snowflake, cache?: boolean, force?: boolean): Promise<Role | null>;
     public fetch(id?: Snowflake, cache?: boolean, force?: boolean): Promise<this>;
@@ -3109,6 +3115,14 @@ declare module 'discord.js' {
     role: RoleResolvable;
     position: number;
   }
+
+  
+  interface RoleTagData {
+    botID?: Snowflake;
+    integrationID?: Snowflake;
+    premiumSubscriberRole?: true;
+  }
+
 
   type RoleResolvable = Role | string;
 
