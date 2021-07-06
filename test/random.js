@@ -2,8 +2,6 @@
 
 'use strict';
 
-const request = require('superagent');
-const ytdl = require('ytdl-core');
 const { token, song } = require('./auth.js');
 const Discord = require('../src');
 
@@ -68,15 +66,6 @@ client.on('message', message => {
 
     if (message.content.startsWith('botname')) {
       client.user.setUsername(message.content.substr(8));
-    }
-
-    if (message.content.startsWith('botavatar')) {
-      request.get('url').end((err, res) => {
-        client.user
-          .setAvatar(res.body)
-          .catch(console.error)
-          .then(user => message.channel.send('Done!'));
-      });
     }
 
     if (message.content.startsWith('gn')) {
@@ -147,6 +136,10 @@ client.on('message', message => {
         })
         .catch(console.error);
     }
+
+    if (message.content === 'systemflags') {
+      message.guild.setSystemChannelFlags(2, 'yes');
+    }
   }
 });
 
@@ -178,41 +171,6 @@ client.on('message', msg => {
     } catch (e) {
       msg.channel.send(`\`\`\`\n${e}\`\`\``);
     }
-  }
-});
-
-let disp, con;
-
-client.on('message', msg => {
-  if (msg.content.startsWith('/play')) {
-    console.log('I am now going to play', msg.content);
-    const chan = msg.content
-      .split(' ')
-      .slice(1)
-      .join(' ');
-    const s = ytdl(chan, { filter: 'audioonly' }, { passes: 3 });
-    s.on('error', e => console.log(`e w stream 1 ${e}`));
-    con.play(s);
-  }
-  if (msg.content.startsWith('/join')) {
-    const chan = msg.content
-      .split(' ')
-      .slice(1)
-      .join(' ');
-    msg.channel.guild.channels
-      .cache
-      .get(chan)
-      .join()
-      .then(conn => {
-        con = conn;
-        msg.reply('done');
-        const s = ytdl(song, { filter: 'audioonly' }, { passes: 3 });
-        s.on('error', e => console.log(`e w stream 2 ${e}`));
-        disp = conn.playStream(s);
-        conn.player.on('debug', console.log);
-        conn.player.on('error', err => console.log(123, err));
-      })
-      .catch(console.error);
   }
 });
 
