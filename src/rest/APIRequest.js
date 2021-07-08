@@ -3,7 +3,10 @@
 const FormData = require('@discordjs/form-data');
 const AbortController = require('abort-controller');
 const fetch = require('petitio');
+const Client = require('undici/lib/core/client.js');
 const { UserAgent } = require('../util/Constants');
+
+const client = new Client('https://discord.com', { pipelining: 10, keepAliveTimeout: 300000 });
 
 class APIRequest {
   constructor(rest, method, path, options) {
@@ -53,7 +56,7 @@ class APIRequest {
     const controller = new AbortController();
     const timeout = this.client.setTimeout(() => controller.abort(), this.client.options.restRequestTimeout);
 
-    const req = fetch(url, this.method.toUpperCase());
+    const req = fetch(url, this.method.toUpperCase()).client(client, true);
 
     if (body) req.body(body instanceof FormData ? body.getBuffer() : body);
 
