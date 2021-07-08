@@ -24,6 +24,7 @@
 
 'use strict';
 
+// eslint-disable-next-line no-warning-comments
 // TODO(kyranet, vladfrangu): replace this with discord.js v13's core AsyncQueue.
 
 /**
