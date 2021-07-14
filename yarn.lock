@@ -734,7 +734,7 @@
 
 "@tbnritzdoge/events@axisiscool/events#stable":
   version "0.1.7"
-  resolved "https://codeload.github.com/axisiscool/events/tar.gz/b74d382cecdec5ae1efc88f84422fb63bbae2012"
+  resolved "https://codeload.github.com/axisiscool/events/tar.gz/c6abdc4109b30b25743172cf0489af4a923abe04"
 
 "@tootallnate/once@1":
   version "1.1.2"
