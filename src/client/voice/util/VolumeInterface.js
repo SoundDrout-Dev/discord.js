@@ -1,6 +1,6 @@
 'use strict';
 
-const EventEmitter = require('eventemitter2');
+const EventEmitter = require('@tbnritzdoge/events');
 
 /**
  * An interface class for volume transformation.

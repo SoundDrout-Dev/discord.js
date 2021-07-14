@@ -8,14 +8,9 @@
     "pretty": false,
     "module": "commonjs",
     "target": "es2019",
-    "lib": [
-      "esnext",
-      "esnext.array",
-      "esnext.asynciterable",
-      "esnext.intl",
-      "esnext.symbol"
-    ],
+    "lib": ["esnext", "esnext.array", "esnext.asynciterable", "esnext.intl", "esnext.symbol"],
     "sourceMap": false,
-    "skipDefaultLibCheck": true
+    "skipDefaultLibCheck": true,
+    "esModuleInterop": true
   }
 }

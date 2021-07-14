@@ -1,7 +1,7 @@
 'use strict';
 
 const { Readable: ReadableStream } = require('stream');
-const EventEmitter = require('eventemitter2');
+const EventEmitter = require('@tbnritzdoge/events');
 const prism = require('prism-media');
 const StreamDispatcher = require('../dispatcher/StreamDispatcher');
 

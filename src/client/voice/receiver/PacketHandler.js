@@ -1,6 +1,6 @@
 'use strict';
 
-const EventEmitter = require('eventemitter2');
+const EventEmitter = require('@tbnritzdoge/events');
 const Speaking = require('../../../util/Speaking');
 const secretbox = require('../util/Secretbox');
 const { SILENCE_FRAME } = require('../util/Silence');

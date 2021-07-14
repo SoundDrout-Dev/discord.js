@@ -1,6 +1,6 @@
 'use strict';
 
-const EventEmitter = require('eventemitter2');
+const EventEmitter = require('@tbnritzdoge/events');
 const prism = require('prism-media');
 const PacketHandler = require('./PacketHandler');
 const { Error } = require('../../../errors');

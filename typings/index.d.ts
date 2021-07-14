@@ -12,7 +12,7 @@ declare enum ChannelType {
 declare module 'discord.js' {
   import BaseCollection from '@discordjs/collection';
   import { ChildProcess } from 'child_process';
-  import { EventEmitter2 as EventEmitter } from 'eventemitter2';
+  import EventEmitter from '@tbnritzdoge/events';
   import { PathLike } from 'fs';
   import { Readable, Stream, Writable } from 'stream';
   import * as WebSocket from 'ws';
@@ -237,11 +237,11 @@ declare module 'discord.js' {
     public emit<K extends keyof ClientEvents>(event: K, ...args: ClientEvents[K]): boolean;
     public emit<S extends string | symbol>(event: Exclude<S, keyof ClientEvents>, ...args: any[]): boolean;
 
-    public off<K extends keyof ClientEvents>(event: K, listener: (...args: ClientEvents[K]) => void): this;
+    public off<K extends keyof ClientEvents>(event: K, listener: (...args: ClientEvents[K]) => void): undefined;
     public off<S extends string | symbol>(
       event: Exclude<S, keyof ClientEvents>,
       listener: (...args: any[]) => void,
-    ): this;
+    ): undefined;
 
     public removeAllListeners<K extends keyof ClientEvents>(event?: K): this;
     public removeAllListeners<S extends string | symbol>(event?: Exclude<S, keyof ClientEvents>): this;
@@ -1401,9 +1401,9 @@ declare module 'discord.js' {
     ): Promise<Collection<number, Shard>>;
     public spawn(amount?: number | 'auto', delay?: number, spawnTimeout?: number): Promise<Collection<number, Shard>>;
 
-    public on(event: 'shardCreate', listener: (shard: Shard) => void): this;
+    public on<K = 'shardCreate'>(event: K, listener: (shard: Shard) => void): this;
 
-    public once(event: 'shardCreate', listener: (shard: Shard) => void): this;
+    public once<K = 'shardCreate'>(event: K, listener: (args: Shard) => void): this;
   }
 
   export class SnowflakeUtil {
@@ -1743,9 +1743,9 @@ declare module 'discord.js' {
     public setVolumeDecibels(db: number): void;
     public setVolumeLogarithmic(value: number): void;
 
-    public on(event: 'volumeChange', listener: (oldVolume: number, newVolume: number) => void): this;
+    public on<K = 'volumeChange'>(event: K, listener: (oldVolume: number, newVolume: number) => void): this;
 
-    public once(event: 'volumeChange', listener: (oldVolume: number, newVolume: number) => void): this;
+    public once<K = 'volumeChange'>(event: K, listener: (oldVolume: number, newVolume: number) => void): this;
   }
 
   export class Webhook extends WebhookMixin() {
@@ -1782,8 +1782,8 @@ declare module 'discord.js' {
     public status: Status;
     public readonly ping: number;
 
-    public on(event: WSEventType, listener: (data: any, shardID: number) => void): this;
-    public once(event: WSEventType, listener: (data: any, shardID: number) => void): this;
+    public on<K = WSEventType>(event: K, listener: (data: any, shardID: number) => void): this;
+    public once<K = WSEventType>(event: K, listener: (data: any, shardID: number) => void): this;
 
     private debug(message: string, shard?: WebSocketShard): void;
     private connect(): Promise<void>;
@@ -3116,13 +3116,11 @@ declare module 'discord.js' {
     position: number;
   }
 
-  
   interface RoleTagData {
     botID?: Snowflake;
     integrationID?: Snowflake;
     premiumSubscriberRole?: true;
   }
-
 
   type RoleResolvable = Role | string;
 

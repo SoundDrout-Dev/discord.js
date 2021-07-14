@@ -1,6 +1,6 @@
 'use strict';
 
-const EventEmitter = require('eventemitter2');
+const EventEmitter = require('@tbnritzdoge/events');
 const WebSocket = require('../../WebSocket');
 const { browser, Status, Events, ShardEvents, OPCodes, WSEvents } = require('../../util/Constants');
 

@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const EventEmitter = require('eventemitter2');
+const EventEmitter = require('@tbnritzdoge/events');
 const Shard = require('./Shard');
 const { Error, TypeError, RangeError } = require('../errors');
 const Collection = require('../util/Collection');

@@ -1,7 +1,7 @@
 'use strict';
 
 require('setimmediate');
-const EventEmitter = require('eventemitter2');
+const EventEmitter = require('@tbnritzdoge/events');
 const RESTManager = require('../rest/RESTManager');
 const { DefaultOptions } = require('../util/Constants');
 const Util = require('../util/Util');
