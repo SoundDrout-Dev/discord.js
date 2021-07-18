@@ -732,10 +732,10 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
-"@tbnritzdoge/events@^0.1.9":
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/@tbnritzdoge/events/-/events-0.1.9.tgz#6fd70310579b7763473eb8969632693513fdbd21"
-  integrity sha512-pBG7wjM8eKjBa0B8WbY5FFPO+HOjpFk3AjvZAbU6TMpa/5PWfOqb+GJXQ46k/L+xd5NqF3FFp++J+Bb3UG4HaA==
+"@tbnritzdoge/events@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@tbnritzdoge/events/-/events-1.0.1.tgz#9d09404e8a589ae875af2865ebfaa5498fb613a0"
+  integrity sha512-WK0cjokH6r0MyLlOosNz/isF4J1ePlXOb4chKaTo12U3qiPtr8DS0DhzV62Ui0wN37v+7b4gDPYUzoXAY+cDuw==
 
 "@tootallnate/once@1":
   version "1.1.2"
